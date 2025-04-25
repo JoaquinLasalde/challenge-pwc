@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.db.session import init_db
-from app.api import authors_router
+from app.api import authors_router, books_router
 
 # Create the FastAPI app
 app = FastAPI(
@@ -38,6 +38,7 @@ def version():
 
 # Include API routers
 app.include_router(authors_router, prefix="/api")
+app.include_router(books_router, prefix="/api")
 
 # Initialize database on startup
 @app.on_event("startup")
