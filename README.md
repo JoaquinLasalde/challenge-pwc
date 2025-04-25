@@ -41,6 +41,30 @@ The API will be available at `http://localhost:8001`.
 - API documentation: `http://localhost:8001/docs`
 - Alternative documentation: `http://localhost:8001/redoc`
 
+## Running with Docker
+
+### Using Docker Compose (Recommended)
+
+The easiest way to run the application is with Docker Compose:
+
+```bash
+docker-compose up
+```
+
+This will build the Docker image and start the container. The API will be available at `http://localhost:8001`.
+
+### Using Docker Directly
+
+You can also build and run the Docker image directly:
+
+```bash
+# Build the image
+docker build -t library-api .
+
+# Run the container
+docker run -p 8001:8001 -v $(pwd)/data:/app/data -e DATABASE_URL=sqlite:///data/library.db -e ENVIRONMENT=production library-api
+```
+
 ## API Endpoints
 
 ### Health and Version
@@ -104,4 +128,4 @@ This application follows a layered architecture:
 
 - Database diagrams: See `docs/database_diagram.md`
 - Integration diagrams: See `docs/integration_diagram.md`
-- Testing endpoints: See `docs/testing_endpoints.md` 
+- Testing endpoints: See `docs/testing_endpoints.md`
