@@ -8,6 +8,7 @@ from app.db.session import init_db
 from app.api.v1 import v1_router
 from app.core.logging import get_logger
 from app.core.errors import http_exception_handler, validation_exception_handler, not_found_handler
+from app.core.middleware import CorrelationIdMiddleware, TimingMiddleware
 
 # Configure logger
 logger = get_logger(__name__)
@@ -34,42 +35,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Middleware for request logging
-@app.middleware("http")
-async def log_requests(request: Request, call_next):
-    request_id = str(uuid.uuid4())
-    request.state.request_id = request_id
-    
-    # Log request
-    logger.info(
-        f"Request started | {request_id} | {request.method} {request.url.path}"
-    )
-    
-    # Measure request processing time
-    start_time = time.time()
-    
-    try:
-        # Process request
-        response = await call_next(request)
-        
-        # Calculate processing time
-        process_time = time.time() - start_time
-        
-        # Log response
-        logger.info(
-            f"Request completed | {request_id} | {request.method} {request.url.path} | "
-            f"Status: {response.status_code} | Time: {process_time:.3f}s"
-        )
-        
-        # Add request ID to response headers
-        response.headers["X-Request-ID"] = request_id
-        return response
-    except Exception as e:
-        # Log exception
-        logger.error(
-            f"Request failed | {request_id} | {request.method} {request.url.path} | {str(e)}"
-        )
-        raise
+# Add correlation ID middleware
+app.add_middleware(CorrelationIdMiddleware)
+
+# Add timing middleware
+app.add_middleware(TimingMiddleware)
 
 # Health check endpoint
 @app.get("/health", tags=["Health"])

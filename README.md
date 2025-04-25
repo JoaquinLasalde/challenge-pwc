@@ -160,6 +160,18 @@ Example error response:
 }
 ```
 
+## Correlation IDs
+
+The application implements a correlation ID system for request tracing:
+
+- **Unique Request Identifier**: Each request is assigned a UUID
+- **Header Propagation**: Correlation IDs are passed via the `X-Correlation-ID` header
+- **Distributed Tracing**: Existing IDs from upstream services are preserved
+- **Request Context**: Correlation IDs are available throughout the request lifecycle
+- **Performance Tracking**: Response times are tracked and returned via the `X-Process-Time-Ms` header
+
+This feature allows tracking requests across multiple services and provides better observability for debugging and monitoring.
+
 ## Documentation
 
 - Database diagrams: See `docs/database_diagram.md`
