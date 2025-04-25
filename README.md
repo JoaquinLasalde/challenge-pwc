@@ -72,40 +72,40 @@ docker run -p 8001:8001 -v $(pwd)/data:/app/data -e DATABASE_URL=sqlite:///data/
 - `GET /version` - Get API version
 
 ### Authors
-- `GET /api/authors/` - Get all authors
-- `GET /api/authors/{id}` - Get author by ID
-- `GET /api/authors/{id}/books` - Get author with all their books
-- `GET /api/authors/{id}/stats` - Get author with book statistics
-- `POST /api/authors/` - Create a new author
-- `PATCH /api/authors/{id}` - Update an author
-- `DELETE /api/authors/{id}` - Delete an author
+- `GET /api/v1/authors/` - Get all authors
+- `GET /api/v1/authors/{id}` - Get author by ID
+- `GET /api/v1/authors/{id}/books` - Get author with all their books
+- `GET /api/v1/authors/{id}/stats` - Get author with book statistics
+- `POST /api/v1/authors/` - Create a new author
+- `PATCH /api/v1/authors/{id}` - Update an author
+- `DELETE /api/v1/authors/{id}` - Delete an author
 
 ### Books
-- `GET /api/books/` - Get all books
-- `GET /api/books/available` - Get available books
-- `GET /api/books/by-author/{author_id}` - Get books by author
-- `GET /api/books/by-genre/{genre}` - Get books by genre
-- `GET /api/books/availability-summary` - Get book availability summary
-- `GET /api/books/{id}` - Get book by ID
-- `GET /api/books/{id}/with-author` - Get book with author details
-- `POST /api/books/` - Create a new book
-- `PATCH /api/books/{id}` - Update a book
-- `DELETE /api/books/{id}` - Delete a book
+- `GET /api/v1/books/` - Get all books
+- `GET /api/v1/books/available` - Get available books
+- `GET /api/v1/books/by-author/{author_id}` - Get books by author
+- `GET /api/v1/books/by-genre/{genre}` - Get books by genre
+- `GET /api/v1/books/availability-summary` - Get book availability summary
+- `GET /api/v1/books/{id}` - Get book by ID
+- `GET /api/v1/books/{id}/with-author` - Get book with author details
+- `POST /api/v1/books/` - Create a new book
+- `PATCH /api/v1/books/{id}` - Update a book
+- `DELETE /api/v1/books/{id}` - Delete a book
 
 ### Users
-- `GET /api/users/` - Get all users
-- `GET /api/users/{id}` - Get user by ID
-- `GET /api/users/{id}/loans` - Get user with loans
-- `POST /api/users/` - Create a new user
-- `PATCH /api/users/{id}` - Update a user
-- `DELETE /api/users/{id}` - Delete a user
+- `GET /api/v1/users/` - Get all users
+- `GET /api/v1/users/{id}` - Get user by ID
+- `GET /api/v1/users/{id}/loans` - Get user with loans
+- `POST /api/v1/users/` - Create a new user
+- `PATCH /api/v1/users/{id}` - Update a user
+- `DELETE /api/v1/users/{id}` - Delete a user
 
 ### Loans
-- `GET /api/loans/` - Get all loans
-- `GET /api/loans/{id}` - Get loan by ID
-- `POST /api/loans/` - Create a new loan
-- `PATCH /api/loans/{id}` - Update a loan
-- `DELETE /api/loans/{id}` - Delete a loan
+- `GET /api/v1/loans/` - Get all loans
+- `GET /api/v1/loans/{id}` - Get loan by ID
+- `POST /api/v1/loans/` - Create a new loan
+- `PATCH /api/v1/loans/{id}` - Update a loan
+- `DELETE /api/v1/loans/{id}` - Delete a loan
 
 ## Database Cleaning
 

@@ -4,7 +4,7 @@ import time
 import uuid
 from app.core.config import settings
 from app.db.session import init_db
-from app.api import authors_router, books_router, users_router, loans_router
+from app.api.v1 import v1_router
 from app.core.logging import get_logger
 
 # Configure logger
@@ -81,11 +81,8 @@ def version():
     logger.debug("Version endpoint called")
     return {"version": settings.API_VERSION}
 
-# Include API routers
-app.include_router(authors_router, prefix="/api")
-app.include_router(books_router, prefix="/api")
-app.include_router(users_router, prefix="/api")
-app.include_router(loans_router, prefix="/api")
+# Include API routers with versioning
+app.include_router(v1_router, prefix="/api/v1")
 
 # Initialize database on startup
 @app.on_event("startup")
