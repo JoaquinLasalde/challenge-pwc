@@ -1,0 +1,15 @@
+# Core dependencies
+fastapi==0.115.8
+uvicorn==0.34.0
+sqlmodel==0.0.24
+pydantic==2.9.2
+pydantic-settings==2.7.1
+SQLAlchemy==2.0.40
+python-dotenv==1.0.1
+
+# API extensions
+email-validator==2.1.0.post1
+python-multipart==0.0.20
+
+# Development
+black==23.11.0 
