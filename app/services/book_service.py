@@ -6,6 +6,7 @@ from app.models.book import Book
 from app.models.author import Author
 from app.schemas.book import BookCreate, BookUpdate
 from app.services.base_service import BaseService
+from app.core.logging import get_logger
 
 class BookService(BaseService[Book, BookCreate, BookUpdate]):
     """
@@ -13,19 +14,23 @@ class BookService(BaseService[Book, BookCreate, BookUpdate]):
     """
     def __init__(self):
         super().__init__(Book)
+        self.logger = get_logger(__name__)
     
     def create(self, db: Session, *, obj_in: BookCreate) -> Book:
         """
         Create a new book with validation that the author exists
         """
+        self.logger.info("Creating new book")
         # Verify the author exists
         author = db.query(Author).filter(Author.id == obj_in.author_id).first()
         if not author:
+            self.logger.warning(f"Cannot create book: Author with ID {obj_in.author_id} not found")
             raise HTTPException(
                 status_code=404,
                 detail=f"Cannot create book: Author with ID {obj_in.author_id} not found"
             )
         
+        self.logger.debug(f"Author {obj_in.author_id} found, proceeding with book creation")
         # Proceed with book creation
         return super().create(db, obj_in=obj_in)
     
@@ -33,6 +38,7 @@ class BookService(BaseService[Book, BookCreate, BookUpdate]):
         """
         Update a book with validation that the author exists if author_id is being updated
         """
+        self.logger.info(f"Updating book with id: {db_obj.id}")
         # Convert input object to dict
         update_data = obj_in.model_dump(exclude_unset=True)
         
@@ -40,10 +46,12 @@ class BookService(BaseService[Book, BookCreate, BookUpdate]):
         if "author_id" in update_data:
             author = db.query(Author).filter(Author.id == update_data["author_id"]).first()
             if not author:
+                self.logger.warning(f"Cannot update book: Author with ID {update_data['author_id']} not found")
                 raise HTTPException(
                     status_code=404,
                     detail=f"Cannot update book: Author with ID {update_data['author_id']} not found"
                 )
+            self.logger.debug(f"New author {update_data['author_id']} found, proceeding with book update")
         
         # Proceed with book update
         return super().update(db, db_obj=db_obj, obj_in=obj_in)
@@ -53,7 +61,12 @@ class BookService(BaseService[Book, BookCreate, BookUpdate]):
         """
         Get a book with its author details
         """
+        self.logger.info(f"Getting book with author details for book_id: {book_id}")
         book = self.get_by_id(db, book_id)
+        if hasattr(book, "author") and book.author:
+            self.logger.debug(f"Book {book_id} has author: {book.author.id}")
+        else:
+            self.logger.debug(f"Book {book_id} has no associated author")
         return book
     
     # Get available books
@@ -62,8 +75,10 @@ class BookService(BaseService[Book, BookCreate, BookUpdate]):
         Get books with available copies
         Business transformation: filter only available books
         """
+        self.logger.info(f"Getting available books (skip={skip}, limit={limit})")
         statement = select(Book).where(Book.available_copies > 0).offset(skip).limit(limit)
         results = db.exec(statement).all()
+        self.logger.debug(f"Found {len(results)} available books")
         return results
     
     # Get books by author
@@ -71,8 +86,10 @@ class BookService(BaseService[Book, BookCreate, BookUpdate]):
         """
         Get all books by a specific author
         """
+        self.logger.info(f"Getting books by author_id: {author_id} (skip={skip}, limit={limit})")
         statement = select(Book).where(Book.author_id == author_id).offset(skip).limit(limit)
         results = db.exec(statement).all()
+        self.logger.debug(f"Found {len(results)} books for author {author_id}")
         return results
     
     # Get books by genre
@@ -80,8 +97,10 @@ class BookService(BaseService[Book, BookCreate, BookUpdate]):
         """
         Get all books in a specific genre
         """
+        self.logger.info(f"Getting books by genre: {genre} (skip={skip}, limit={limit})")
         statement = select(Book).where(Book.genre == genre).offset(skip).limit(limit)
         results = db.exec(statement).all()
+        self.logger.debug(f"Found {len(results)} books in genre '{genre}'")
         return results
     
     # Business transformation - Create book availability summary
@@ -90,23 +109,26 @@ class BookService(BaseService[Book, BookCreate, BookUpdate]):
         Get a summary of book availability by genre
         This is a business transformation that computes statistics across the database
         """
+        self.logger.info("Generating book availability summary by genre")
         statement = select(Book)
         books = db.exec(statement).all()
         
         # Group books by genre and calculate availability
         genres = {}
         for book in books:
-            if book.genre not in genres:
-                genres[book.genre] = {"total": 0, "available": 0, "books": []}
+            genre_name = book.genre or "Uncategorized"
+            if genre_name not in genres:
+                genres[genre_name] = {"total": 0, "available": 0, "books": []}
             
-            genres[book.genre]["total"] += 1
-            genres[book.genre]["available"] += book.available_copies
-            genres[book.genre]["books"].append({
+            genres[genre_name]["total"] += 1
+            genres[genre_name]["available"] += book.available_copies
+            genres[genre_name]["books"].append({
                 "id": str(book.id),
                 "title": book.title,
                 "available_copies": book.available_copies
             })
         
+        self.logger.debug(f"Generated availability summary for {len(genres)} genres")
         return genres
 
 # Create a singleton instance

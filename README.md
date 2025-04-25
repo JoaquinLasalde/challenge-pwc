@@ -124,6 +124,21 @@ This application follows a layered architecture:
 3. **Domain Layer**: Models and schemas (`app/models/`, `app/schemas/`)
 4. **Data Access Layer**: Database sessions and configuration (`app/db/`)
 
+## Logging
+
+The application includes a comprehensive logging system:
+
+- **Log Levels**: Automatically adjusts based on environment (DEBUG for testing, INFO for development, WARNING for production)
+- **Log Rotation**: Logs are stored in `logs/` directory with rotation (10MB per file, max 5 files)
+- **Request Tracking**: Each HTTP request gets a unique ID for tracing through the system
+- **Performance Monitoring**: Request processing time is logged
+- **Structured Logs**: Logs include timestamps, levels, and originating components
+
+To access logs:
+
+- Console logs: Visible in the terminal output
+- File logs: Located in the `logs/` directory
+
 ## Documentation
 
 - Database diagrams: See `docs/database_diagram.md`
