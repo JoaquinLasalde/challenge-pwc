@@ -19,8 +19,8 @@ A FastAPI application for library management that follows a layered architecture
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/library-management-api.git
-cd library-management-api
+git clone https://github.com/JoaquinLasalde/challenge-pwc.git
+cd challenge-pwc
 ```
 
 2. Install dependencies:
@@ -59,10 +59,10 @@ You can also build and run the Docker image directly:
 
 ```bash
 # Build the image
-docker build -t library-api .
+docker build -t challenge-pwc .
 
 # Run the container
-docker run -p 8001:8001 -v $(pwd)/data:/app/data -e DATABASE_URL=sqlite:///data/library.db -e ENVIRONMENT=production library-api
+docker run -p 8001:8001 -v $(pwd)/data:/app/data -e DATABASE_URL=sqlite:///data/library.db -e ENVIRONMENT=production challenge-pwc
 ```
 
 ## API Endpoints
