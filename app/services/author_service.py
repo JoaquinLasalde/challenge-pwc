@@ -5,6 +5,7 @@ from app.models.author import Author
 from app.models.book import Book
 from app.schemas.author import AuthorCreate, AuthorUpdate
 from app.services.base_service import BaseService
+from fastapi import HTTPException
 
 class AuthorService(BaseService[Author, AuthorCreate, AuthorUpdate]):
     """
@@ -44,6 +45,16 @@ class AuthorService(BaseService[Author, AuthorCreate, AuthorUpdate]):
         """
         author = self.get_by_id(db, author_id)
         return author
+
+    def delete(self, db: Session, id: UUID):
+        # Check if author has books
+        books_count = db.query(Book).filter(Book.author_id == id).count()
+        if books_count > 0:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Cannot delete author with ID {id} because they have {books_count} books associated. Delete the books first or reassign them to another author."
+            )
+        return super().delete(db, id=id)
 
 # Create a singleton instance
 author_service = AuthorService() 
