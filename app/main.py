@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.db.session import init_db
+from app.api import authors_router
 
 # Create the FastAPI app
 app = FastAPI(
@@ -34,6 +35,9 @@ def version():
     Get API version
     """
     return {"version": settings.API_VERSION}
+
+# Include API routers
+app.include_router(authors_router, prefix="/api")
 
 # Initialize database on startup
 @app.on_event("startup")
