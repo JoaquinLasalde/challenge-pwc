@@ -139,6 +139,27 @@ To access logs:
 - Console logs: Visible in the terminal output
 - File logs: Located in the `logs/` directory
 
+## Error Handling
+
+The application implements the Problem Details for HTTP APIs standard (RFC 9457):
+
+- **Standardized Error Format**: All errors follow a consistent JSON structure
+- **Rich Error Information**: Errors include type, title, status, detail, and instance fields
+- **Detailed Validation Errors**: Input validation errors include field-specific information
+- **Reference Links**: Error types include URI references to detailed documentation
+
+Example error response:
+
+```json
+{
+  "type": "https://httpstatuses.com/404",
+  "title": "Not Found",
+  "status": 404,
+  "detail": "The author with ID 123e4567-e89b-12d3-a456-426614174000 was not found",
+  "instance": "/api/v1/authors/123e4567-e89b-12d3-a456-426614174000"
+}
+```
+
 ## Documentation
 
 - Database diagrams: See `docs/database_diagram.md`

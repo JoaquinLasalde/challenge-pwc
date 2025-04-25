@@ -1,11 +1,13 @@
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Request, Response, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
 import time
 import uuid
 from app.core.config import settings
 from app.db.session import init_db
 from app.api.v1 import v1_router
 from app.core.logging import get_logger
+from app.core.errors import http_exception_handler, validation_exception_handler, not_found_handler
 
 # Configure logger
 logger = get_logger(__name__)
@@ -16,6 +18,12 @@ app = FastAPI(
     version=settings.API_VERSION,
     description="FastAPI application for library management"
 )
+
+# Register exception handlers
+app.add_exception_handler(HTTPException, http_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(404, not_found_handler)
+app.add_exception_handler(Exception, http_exception_handler)
 
 # Add CORS middleware
 app.add_middleware(
