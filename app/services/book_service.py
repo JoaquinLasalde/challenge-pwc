@@ -1,6 +1,7 @@
 from typing import List, Optional
 from uuid import UUID
 from sqlmodel import Session, select
+from fastapi import HTTPException
 from app.models.book import Book
 from app.models.author import Author
 from app.schemas.book import BookCreate, BookUpdate
@@ -12,6 +13,40 @@ class BookService(BaseService[Book, BookCreate, BookUpdate]):
     """
     def __init__(self):
         super().__init__(Book)
+    
+    def create(self, db: Session, *, obj_in: BookCreate) -> Book:
+        """
+        Create a new book with validation that the author exists
+        """
+        # Verify the author exists
+        author = db.query(Author).filter(Author.id == obj_in.author_id).first()
+        if not author:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Cannot create book: Author with ID {obj_in.author_id} not found"
+            )
+        
+        # Proceed with book creation
+        return super().create(db, obj_in=obj_in)
+    
+    def update(self, db: Session, *, db_obj: Book, obj_in: BookUpdate) -> Book:
+        """
+        Update a book with validation that the author exists if author_id is being updated
+        """
+        # Convert input object to dict
+        update_data = obj_in.model_dump(exclude_unset=True)
+        
+        # If author_id is being updated, verify the new author exists
+        if "author_id" in update_data:
+            author = db.query(Author).filter(Author.id == update_data["author_id"]).first()
+            if not author:
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Cannot update book: Author with ID {update_data['author_id']} not found"
+                )
+        
+        # Proceed with book update
+        return super().update(db, db_obj=db_obj, obj_in=obj_in)
     
     # Book with author details
     def get_book_with_author(self, db: Session, book_id: UUID):
